@@ -1,45 +1,54 @@
-{% set name = "<PLEASE ADD PKG NAME>" %}
-{% set version = "<PLEASE ADD PKG VERSION>" %}
+{% set name = "diptest" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: <sha256>
+  # Used GH since pypi version missed test data for upstream tests
+  url: https://github.com/RUrlus/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f96ac0f1c0286d6ae9a3a4e25fc00d5dd868cfe33a2218ff0fe2e904091a542f
 
 build:
-  number: 0
+  skip: True                # [py<38]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: True  # [py<38]
+  number: 0
 
 requirements:
   host:
     - python
+    - cmake >=3.16
+    - scikit-build-core >=0.3.3
+    - pybind11
     - pip
   run:
     - python
+    - psutil
+    - numpy >=1.18
 
 test:
   imports:
-    - {{ name.replace('-', '.') }}
-  requires:
-    - pip
+    - diptest
   commands:
     - pip check
+    - pytest
+  requires:
+    - pip
+    - pytest
+  source_files:
+    - tests
 
 about:
-  home: <PLEASE ADD HOME URL>
-  summary: <PLEASE ADD SUMMARY>
-  description: |
-    <PLEASE ADD DESCRIPTION>
-  license: <PLEASE ADD LICENSE>
-  license_family: <PLEASE ADD LICENSE_FAMILY>
-  license_file: <PLEASE_ADD_LICENSE_FILE>
-  dev_url: <PLEASE ADD DEV URL>
-  doc_url: <PLEASE ADD DOC URL>
+  home: https://github.com/RUrlus/diptest
+  summary: Hartigan's diptest.
+  dev_url: https://github.com/RUrlus/diptest
+  doc_url: https://github.com/RUrlus/diptest#readme
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  description: A Python/C(++) implementation of Hartigan & Hartigan's dip test for unimodality.
 
 extra:
   recipe-maintainers:
-    - Jrice1317
+    - mohamedlarbisentissi
