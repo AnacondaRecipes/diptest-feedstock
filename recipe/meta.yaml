@@ -11,18 +11,17 @@ source:
   sha256: f96ac0f1c0286d6ae9a3a4e25fc00d5dd868cfe33a2218ff0fe2e904091a542f
 
 build:
-  skip: True                # [py<38]
+  skip: True                  # [py<38]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
 
 requirements:
   build:
-    - {{ compiler('cxx') }} # [linux]
+    - {{ compiler('cxx') }}   # [linux]
   host:
     - python
     - cmake >=3.16
-    - _openmp_mutex          # [linux]
-    - make                  # [linux]
+    - make                    # [linux]
     - scikit-build-core >=0.3.3
     - pybind11
     - pip
@@ -30,6 +29,7 @@ requirements:
     - python
     - psutil
     - numpy >=1.18
+    - _openmp_mutex           # [linux]
 
 test:
   imports:
