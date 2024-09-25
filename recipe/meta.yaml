@@ -17,10 +17,11 @@ build:
 
 requirements:
   build:
-    - {{ compiler('cxx') }}
+    - {{ compiler('cxx') }} # [linux]
   host:
     - python
     - cmake >=3.16
+    - _openmp_mutex          # [linux]
     - make                  # [linux]
     - scikit-build-core >=0.3.3
     - pybind11
