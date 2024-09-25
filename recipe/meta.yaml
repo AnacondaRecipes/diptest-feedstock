@@ -18,10 +18,10 @@ build:
 requirements:
   build:
     - {{ compiler('cxx') }}   # [linux]
+    - make                    # [linux]
+    - cmake >=3.16
   host:
     - python
-    - cmake >=3.16
-    - make                    # [linux]
     - scikit-build-core >=0.3.3
     - pybind11
     - pip
