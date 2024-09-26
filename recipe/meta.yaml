@@ -29,7 +29,7 @@ requirements:
     - python
     - psutil
     - numpy >=1.18
-    - _openmp_mutex=5.1           # [linux]
+    - _openmp_mutex =5.1           # [linux]
 
 test:
   imports:
