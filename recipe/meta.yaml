@@ -1,6 +1,6 @@
 {% set name = "diptest" %}
 {% set version = "0.8.0" %}
-{% set script = PYTHON ~ " -m pip install . -vv --no-deps --no-build-isolation" %}
+{% set script = PYTHON + " -m pip install . -vv --no-deps --no-build-isolation" %}
 {% set script = "brew install libomp && " + script %}                # [osx]
 
 package:
