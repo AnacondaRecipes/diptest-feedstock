@@ -1,7 +1,5 @@
 {% set name = "diptest" %}
 {% set version = "0.8.0" %}
-{% set script = PYTHON + " -m pip install . -vv --no-deps --no-build-isolation" %}
-{% set script = "brew install libomp && " + script %}                # [osx]
 
 package:
   name: {{ name|lower }}
@@ -14,7 +12,7 @@ source:
 
 build:
   skip: True                                                          # [py<38]
-  script: {{ script }}
+  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
   missing_dso_whitelist: 
     - $RPATH/ld64.so.1                                                # [s390x]
@@ -24,16 +22,31 @@ requirements:
     - {{ compiler('cxx') }}                                           # [linux]
     - make                                                            # [linux]
     - cmake >=3.16
+    # OpenMP
+    # We pull in the same versions of mkl and intel-openmp: intel aligns the versions
+    # We use intel-openmp for all mkl variants.
+    # For openblas on win and linux, we don't specify any openmp implementation; it comes from the compiler.
+    #- intel-openmp   {{ mkl }}                                        # [osx and blas_impl == "mkl"]
+    - intel-openmp                                                    # [osx and not arm64]
+    - llvm-openmp 14.0.6                                              # [osx and arm64]
   host:
     - python
     - scikit-build-core >=0.3.3
+    #- intel-openmp                                                    # [osx and blas_impl == "mkl"]
+    #- llvm-openmp 14.0.6                                              # [osx and not (blas_impl == "mkl")]
     - pybind11
     - pip
   run:
+    # OpenMP
+    #- {{ pin_compatible('intel-openmp') }}                            # [osx and blas_impl == "mkl"]
+    #- llvm-openmp                                                     # [osx and not (blas_impl == "mkl")]
     - python
     - psutil
     - numpy >=1.18
     - _openmp_mutex =5.1                                              # [linux]
+  run_constrained:
+    # current intel-openmp builds are incompatible with llvm-openmp on osx-64
+    #- llvm-openmp <0a0                # [(blas_impl == "mkl") and (osx and x86_64)]  
 
 test:
   imports:
