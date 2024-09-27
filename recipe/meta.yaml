@@ -1,5 +1,7 @@
 {% set name = "diptest" %}
 {% set version = "0.8.0" %}
+{% set script = PYTHON ~ " -m pip install . -vv --no-deps --no-build-isolation" %}
+{% set script = "brew install libomp && " + script %}                # [osx]
 
 package:
   name: {{ name|lower }}
@@ -11,16 +13,16 @@ source:
   sha256: f96ac0f1c0286d6ae9a3a4e25fc00d5dd868cfe33a2218ff0fe2e904091a542f
 
 build:
-  skip: True                        # [py<38]
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
+  skip: True                                                          # [py<38]
+  script: {{ script }}
   number: 0
   missing_dso_whitelist: 
-    - $RPATH/ld64.so.1              # [s390x]
+    - $RPATH/ld64.so.1                                                # [s390x]
 
 requirements:
   build:
-    - {{ compiler('cxx') }}         # [linux]
-    - make                          # [linux]
+    - {{ compiler('cxx') }}                                           # [linux]
+    - make                                                            # [linux]
     - cmake >=3.16
   host:
     - python
@@ -31,7 +33,7 @@ requirements:
     - python
     - psutil
     - numpy >=1.18
-    - _openmp_mutex =5.1            # [linux]
+    - _openmp_mutex =5.1                                              # [linux]
 
 test:
   imports:
