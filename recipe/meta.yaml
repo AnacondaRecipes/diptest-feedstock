@@ -10,7 +10,7 @@ source:
   url: https://github.com/RUrlus/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
   sha256: f96ac0f1c0286d6ae9a3a4e25fc00d5dd868cfe33a2218ff0fe2e904091a542f
   patches:
-    - patches/0001-remove-hombrew-path-for-OpenMP.patch
+    - patches/0001-remove-homebrew-path-for-OpenMP.patch
 
 build:
   skip: True                                                          # [py<38]
