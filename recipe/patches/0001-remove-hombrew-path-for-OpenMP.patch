@@ -1,0 +1,28 @@
+From c620012528cc83fa487672c03b7d12ec52257c0d Mon Sep 17 00:00:00 2001
+From: Mohamed Sentissi <msentissi@anaconda.com>
+Date: Tue, 1 Oct 2024 11:50:18 -0400
+Subject: [PATCH] Remove hombrew path for OpenMP
+
+---
+ src/diptest-core/cmake/FindDependencies.cmake | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/src/diptest-core/cmake/FindDependencies.cmake b/src/diptest-core/cmake/FindDependencies.cmake
+index c2a7e64..fc5c435 100644
+--- a/src/diptest-core/cmake/FindDependencies.cmake
++++ b/src/diptest-core/cmake/FindDependencies.cmake
+@@ -4,11 +4,6 @@ find_package(pybind11 CONFIG REQUIRED)
+ if(NOT DIPTEST_DISABLE_OPENMP)
+     message(STATUS "diptest | OpenMP disabled: OFF")
+     find_package(OpenMP)
+-    if ((NOT OpenMP_FOUND) AND APPLE)
+-        include(SetHomebrew)
+-        set(OpenMP_ROOT ${HOMEBREW_PREFIX}/opt/libomp)
+-        find_package(OpenMP)
+-    endif()
+     if (NOT OpenMP_FOUND AND DIPTEST_ENABLE_OPENMP)
+         find_package(OpenMP REQUIRED)
+     endif()
+-- 
+2.45.2
+
