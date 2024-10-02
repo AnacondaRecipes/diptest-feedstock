@@ -1,45 +1,79 @@
-{% set name = "<PLEASE ADD PKG NAME>" %}
-{% set version = "<PLEASE ADD PKG VERSION>" %}
+{% set name = "diptest" %}
+{% set version = "0.8.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: <sha256>
+  # Used GH since pypi version missed test data for upstream tests
+  url: https://github.com/RUrlus/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: f96ac0f1c0286d6ae9a3a4e25fc00d5dd868cfe33a2218ff0fe2e904091a542f
+  patches:
+    - patches/0001-remove-homebrew-path-for-OpenMP.patch
 
 build:
-  number: 0
+  skip: True                                                          # [py<38]
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: True  # [py<38]
+  number: 0
+  missing_dso_whitelist: 
+    - $RPATH/ld64.so.1                                                # [s390x]
 
 requirements:
+  build:
+    - patch       # [not win]
+    - m2-patch    # [win]
+    - {{ compiler('cxx') }}                                           # [linux]
+    - make                                                            # [linux]
+    - cmake >=3.16
+    # OpenMP
+    # We pull in the same versions of mkl and intel-openmp: intel aligns the versions
+    # We use intel-openmp for all mkl variants.
+    # For openblas on win and linux, we don't specify any openmp implementation; it comes from the compiler.
+    - intel-openmp   {{ mkl }}                                        # [osx and blas_impl == "mkl"]
+    - llvm-openmp 14.0.6                                              # [osx and not (blas_impl == "mkl")]
   host:
     - python
+    - scikit-build-core >=0.3.3
+    # OpenMP
+    - intel-openmp   {{ mkl }}                                        # [blas_impl == "mkl"]
+    - llvm-openmp 14.0.6                                              # [osx and not (blas_impl == "mkl")]
+    - pybind11
     - pip
   run:
+    # OpenMP
+    - {{ pin_compatible('intel-openmp') }}                            # [blas_impl == "mkl"]
+    - llvm-openmp                                                     # [osx and not (blas_impl == "mkl")]
     - python
+    - psutil
+    - numpy >=1.18
+    - _openmp_mutex =5.1                                              # [linux]
+  run_constrained:
+    # current intel-openmp builds are incompatible with llvm-openmp on osx-64
+    - llvm-openmp <0a0                                                # [(blas_impl == "mkl") and (osx and x86_64)]  
 
 test:
   imports:
-    - {{ name.replace('-', '.') }}
-  requires:
-    - pip
+    - diptest
   commands:
     - pip check
+    - pytest
+  requires:
+    - pip
+    - pytest
+  source_files:
+    - tests
 
 about:
-  home: <PLEASE ADD HOME URL>
-  summary: <PLEASE ADD SUMMARY>
-  description: |
-    <PLEASE ADD DESCRIPTION>
-  license: <PLEASE ADD LICENSE>
-  license_family: <PLEASE ADD LICENSE_FAMILY>
-  license_file: <PLEASE_ADD_LICENSE_FILE>
-  dev_url: <PLEASE ADD DEV URL>
-  doc_url: <PLEASE ADD DOC URL>
+  home: https://github.com/RUrlus/diptest
+  summary: Hartigan's diptest.
+  dev_url: https://github.com/RUrlus/diptest
+  doc_url: https://github.com/RUrlus/diptest#readme
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
+  description: A Python/C(++) implementation of Hartigan & Hartigan's dip test for unimodality.
 
 extra:
   recipe-maintainers:
-    - Jrice1317
+    - mohamedlarbisentissi
