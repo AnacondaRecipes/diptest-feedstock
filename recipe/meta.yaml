@@ -33,6 +33,7 @@ requirements:
     - llvm-openmp 14.0.6                                              # [osx and not (blas_impl == "mkl")]
   host:
     - python
+    - libgomp       # [linux]
     - scikit-build-core >=0.3.3
     # OpenMP
     - intel-openmp   {{ mkl }}                                        # [blas_impl == "mkl"]
